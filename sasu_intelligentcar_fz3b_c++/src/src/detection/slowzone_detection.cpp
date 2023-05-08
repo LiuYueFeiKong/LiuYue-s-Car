@@ -32,6 +32,7 @@
 
 using namespace cv;
 using namespace std;
+//我的笔记：1.检测慢行区的次数。2.检测是否是慢行区，是就，3.进入下一个条件判断。这里主要是检测慢行区。然后防止错误前瞻引发转向（通过改变track）
 
 class SlowZoneDetection
 {

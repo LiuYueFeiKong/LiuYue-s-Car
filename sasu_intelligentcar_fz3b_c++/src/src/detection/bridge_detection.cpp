@@ -32,7 +32,7 @@
 
 using namespace cv;
 using namespace std;
-
+//我的笔记：这里比较简单，就是判断是否有桥，有桥，就改变track
 class BridgeDetection
 {
 public:

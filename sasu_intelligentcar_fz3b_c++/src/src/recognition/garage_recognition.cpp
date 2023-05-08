@@ -24,6 +24,9 @@
  *
  */
 
+
+//我的笔记：整个类，包含了起点检测函数；“库识别和路径规划”函数（调用出库识别函数，入库识别函数）
+
 #include <fstream>
 #include <iostream>
 #include <cmath>
@@ -65,6 +68,8 @@ public:
    * @return true
    * @return false
    */
+
+    // 我的笔记：起点检测，返回真假。
   bool startingCheck(vector<PredictResult> predict)
   {
     if (startingFilt)
@@ -114,6 +119,18 @@ public:
    *
    * @param track
    */
+
+
+    //我的笔记：这个函数，包含了出库识别和入库识别。除了GarageEntryRecognition这个状态不能返回true，其他都可以
+  //。
+  // if (garageStep == GarageStep::GarageExiting) 前提条件完成，那么
+  //是出库识别函数，出库识别，如果出库完成，那么改变枚举garageStep的值，如果没有，那么就继续保持garageStep的值；（garageStep
+  //= GarageStep::GarageEntryRecognition; // 出库完成）
+  //然后改变是使用啊贝尔曲线改变track
+
+  // else if (entryEnable) 前提条件完成，那么
+  //接着是入库识别，和上面的一样，（garageStep ==
+  //GarageStep::GarageEntryingA//A阶段的入库）
   bool garageRecognition(TrackRecognition &track, vector<PredictResult> predict)
   {
     if (garageStep == GarageStep::GarageExiting) // 出库阶段

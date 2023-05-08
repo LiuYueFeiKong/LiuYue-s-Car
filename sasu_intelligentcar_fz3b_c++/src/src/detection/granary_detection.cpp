@@ -31,6 +31,29 @@
 
 using namespace cv;
 using namespace std;
+//我的笔记：
+//枚举类型enum GranaryStep {
+//   None = 0, // 未触发1
+//  Enable,   // 粮仓操作使能（标志识别成功）2
+//   Enter,    // 粮仓进站3
+// Cruise,   // 粮仓巡航4
+// Exit      // 粮仓出站5
+// };
+
+//这个类的主要函数是granaryDetection
+//用这个来进行，判断，检测到“粮仓的状态”，通过switch检测到2-5，返回true。都没有检测到，就返回false
+
+//这个函数里面：
+//首先判断1，如果是1,在判断是否需要转换成下一个“状态”（就是2）
+//如果是2,通过这个vector<POINT> granarys = searchGranary(predict);
+//得到粮仓标志，通过他的size，来区分，是否行驶了足够距离，
+//如果行驶足够距离，就，进行”下一个判断“，如果没有，就numGranary++;
+
+//”下一个判断“：是指   是             已经完成了这个状态，进入下一个状态，
+//还是减速。 通过这个_pointNearCone =searchNearestCone(track.pointsEdgeLeft,
+//pointsCone);           搜索右下锥桶坐标。 利用_pointNearCone和
+//ROWSIMAGE比较，来进行判断       已经完成了这个状态，进入下一个状态，
+//还是减速。
 
 class GranaryDetection
 {
@@ -121,7 +144,10 @@ public:
 
             break;
         }
-
+//我的笔记：
+//如果是进站。
+//那么通过 if (track.pointsEdgeLeft.size() >ROWSIMAGE / 2) // 第一阶段：当赛道边缘存在时，满足一定条件，改变赛道边缘点集track。
+//else，第二阶段：检查右下锥桶坐标满足巡航条件。如果满足巡航条件，那么进入   粮仓巡航4  这个状态。如果不满足，就进站补线（就是改变track）
         case GranaryStep::Enter: //[03] 进站使能
         {
             if (track.pointsEdgeLeft.size() > ROWSIMAGE / 2) // 第一阶段：当赛道边缘存在时
@@ -195,7 +221,10 @@ public:
 
             break;
         }
-
+//我的笔记：这个case，包含三个块：
+//块1：判断是否出站减速和出站使能。通过track.pointsEdgeLeft.size() ，track.pointsEdgeRight.size()和ROWSIMAGE做比较
+//块2：判断是否需要补线（就是改变track），然后再判断是否需要增强右拐能力。
+//块3：出口检测
         case GranaryStep::Cruise: //[04] 巡航使能
         {
             vector<POINT> pointsCone = searchCones(predict);      // 计算锥桶的坐标
@@ -281,6 +310,8 @@ public:
 
             break;
         }
+
+          //我的笔记：这里，是判断是否出站了，没有的话，那么就继续改变track。（if，else）
         case GranaryStep::Exit: //[05] 出站使能
         {
             vector<POINT> pointsCone = searchCones(predict);  // 计算锥桶的坐标

@@ -37,7 +37,7 @@
 
 using namespace cv;
 using namespace std;
-
+//我的笔记：好像没有右入十。
 class CrossroadRecognition
 {
 public:
@@ -74,7 +74,7 @@ public:
 
         _index = 1;
         //----------------------------------------------------------------------------------------------------
-
+        //我的笔记：搜索左入十字
         //[01] 左入十字处理
         if (track.stdevRight > 50)
         {
@@ -101,7 +101,21 @@ public:
                 }
             }
         }
+        //我的笔记：左入十字：包括搜索到叉路，和未搜索到叉路
 
+        //首先：搜索右下突变行rowBreakRightDown。通过rowBreakRightDown =
+        //searchBreakRightDown(track.pointsEdgeRight)。    pointBreakRD =
+        //track.pointsEdgeRight[rowBreakRightDown]; // 右下突变点
+
+        // if搜索到叉路：
+        //还有得到一个最优点indexSP
+        //右下突变点pointBreakRD作为贝塞尔曲线起点，最优点作为终点。然后改变track
+
+        // if未搜索到叉路：
+        //补线起点是：右下突变点pointBreakRD，补线终点是：（（左上拐点pointBreakLU
+        //+   右下突变点pointBreakRD）/2,1）。
+
+        // rowEnd用来赛道边缘重搜索。我也不知道这是什么意思。
         counterRec = 0;
         if (crossroadType == CrossroadType::CrossroadLeft) // 左入十字
         {
@@ -204,7 +218,10 @@ public:
                 }
             }
         }
-
+        //我的笔记：
+        //补线：左上，左下拐点，得到后，然后算出k，b，然后用k，b改变track.pointsEdgeLeft。
+        //然后进行： POINT startPoint = track.pointsEdgeRight[0]; // 补线起点
+        //          POINT endPoint = track.spurroad[indexSP];    // 补线终点
         // 直入十字处理
         if (!repaired) // 如果写入十字未成功
         {

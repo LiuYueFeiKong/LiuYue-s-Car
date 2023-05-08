@@ -52,6 +52,11 @@ public:
      * @param track 赛道识别结果
      * @param detection AI检测结果
      */
+
+
+        //我的笔记：一开始，检测哪个农田区域，改变枚举farmlandStep，pointsEdgeLeftLast，pointsEdgeRightLast（记录前一场数据）
+    //完全进入农田之后，改变conesEdgeLeft（锥桶边缘集），和track。（当然还有其他，我觉得，这两个是最重要的）
+
     bool farmlandDetection(TrackRecognition &track, vector<PredictResult> predict)
     {
         indexDebug = 0;

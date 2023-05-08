@@ -110,7 +110,8 @@ public:
             else
                 counterImmunity++;
             break;
-
+//我的笔记：pointEdgeDet  ai检测边缘点集改变,通过 searchCones(predict);然后使用pointEdgeDet这个结果，通过searchNearestCone(track.pointsEdgeLeft, pointEdgeDet)得到右下的第一个桶的“框”
+//然后如果靠近了右边锥桶，就  depotStep = DepotStep::DepotEnter; // 进站使能
         case DepotStep::DepotEnable: //[02] 维修厂使能
         {
             counterExit++;
@@ -134,6 +135,9 @@ public:
             }
             break;
         }
+
+        //我的笔记：这里是满足一定条件后，depotStep = DepotStep::DepotCruise; //
+        //巡航使能。。   然后画啊贝尔曲线，改变track
         case DepotStep::DepotEnter: //[03] 进站使能
         {
             if (track.pointsEdgeLeft.size() > ROWSIMAGE / 2 && track.pointsEdgeRight.size() > ROWSIMAGE / 2)
@@ -165,7 +169,8 @@ public:
 
             break;
         }
-
+//我的笔记:满足一定的条件，depotStep = DepotStep::DepotStop; // 停车使能     if（如果靠近右边，改变track，判断是否要出站，出站使能。如果靠近左边，改变track，继续右转。）
+//然后如果上面的if不执行，就直接track左边=lastPointsEdgeLeft，右边=右边     最后记录进厂轨迹pathsEdgeLeft，pathsEdgeRight
         case DepotStep::DepotCruise: //[04] 巡航使能
         {
             if (track.pointsEdgeLeft.size() > ROWSIMAGE / 2 && track.pointsEdgeRight.size() > ROWSIMAGE / 2)
@@ -247,7 +252,7 @@ public:
             pathsEdgeRight.push_back(track.pointsEdgeRight);
             break;
         }
-
+          //我的笔记：停车
         case DepotStep::DepotStop: //[05] 停车使能
         {
             carStoping = true;
@@ -260,7 +265,8 @@ public:
             }
             break;
         }
-
+//我的笔记：if出厂，else，track改变，pathsEdgeLeft减少（减少到一定程度，会出厂，看这里块里面的if，if (pathsEdgeLeft.size() < 1 || pathsEdgeRight.size() < 1) ）
+ 
         case DepotStep::DepotExit: //[06] 出站使能
         {
             if (pathsEdgeLeft.size() < 1 || pathsEdgeRight.size() < 1)

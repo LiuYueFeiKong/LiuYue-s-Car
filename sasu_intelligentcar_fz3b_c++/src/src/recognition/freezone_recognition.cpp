@@ -37,7 +37,13 @@
 
 using namespace cv;
 using namespace std;
-
+//我的笔记：函数的真假，看最后面。
+//分成两块。
+//主要块：  1.检测到叉路，                  2.未检测到叉路（在最后面的elseif）（这个不是很多，看看就好了）
+// 1.检测到叉路：  if (track.spurroad.size() >= 1) // 岔路标志
+//下面是这个if里面的内容：1）出入泛行区，2）入泛行区后，进行赛道重构。
+// 1）通过判断等边三角形（次数），来判断，出或入泛行区。然后看这个枚举FreezoneStep的类型来判断是，入，还是出
+// 2）赛道重构：就是改变track。
 class FreezoneRecognition
 {
 public:

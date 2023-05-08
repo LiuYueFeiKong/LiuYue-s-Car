@@ -81,6 +81,14 @@ public:
     _index = 0;
     _ringPoint = POINT(0, 0);
 
+    //我的笔记：如果是入环阶段：if1 (ringStep == RingStep::Entering &&
+    //!track.spurroad.empty())。那么看看是左入环还是右入环。（if2和else if3）
+    // if2（）：for（j）循环，里面用个if，选出合适的j，rowRepairLine = j;
+    // rowRepairLine是用于补线的点          else if3：也是一样。
+    //也就是说，这里就为了找出rowRepairLine
+
+
+
     // 算环用布线的候选点
     rowRepairLine = max(rowRepairLine - 5, 0);
     if (ringStep == RingStep::Entering && !track.spurroad.empty()) {
@@ -110,6 +118,10 @@ public:
       }
     }
 
+    //我的笔记：rowBreakpointLeft得到这个的取值。
+    //右边也是rowBreakpointRight = track.pointsEdgeRight[ii].x;
+
+
     // 搜索赛道左右边缘满足图像边沿的最高处
     for (int ii = 0; ii < track.pointsEdgeLeft.size(); ++ii) {
       rowBreakpointLeft = track.pointsEdgeLeft[ii].x;
@@ -122,6 +134,56 @@ public:
         break;
     }
 
+    //我的笔记：主要是后面的    // [1] 入环判断：包括，环岛方向判定，和内环检测
+    //还有后面的一段代码
+    //环岛方向判断：
+    //得到入环点列号，用于环补线的行号，用于环补线的列号，右入环 还是 左入环
+
+    //内环检测：ringEnable = true;          这个说明，检测到了环岛，
+    // 得到 环岛处理阶段
+    //  左入还是右入环岛
+    //  直道侧的补线起点。
+
+    //后面的一段代码：有判出环，没判出环（有叉路，没叉路）
+    //有判出环：
+    // if：
+    // rowRepairRingside，得到，环一侧的补线起点，的值
+    //得到：rowYendStraightside = track.pointsEdgeLeft[i].x;    直道侧补线的终点
+    // else if：
+    //        track.pointsEdgeLeft.resize(rowRepairRingside);
+    //        rowRepairRingside是环一侧的补线起点
+    //        track.pointsEdgeRight.resize(rowRepairStraightside);
+    //        rowRepairStraightside是直道侧的补线起点 for (int kk = 0; kk <
+    //        b_modify.size(); ++kk)
+    //        {
+    //        track.pointsEdgeRight.emplace_back(b_modify[kk]);
+    //        这个不知道干嘛，反正是改变track的，估计是增强的东西。
+    //         }
+
+    //没判出环，ringEnable=flase， （下面分有叉路和没叉路）
+    //没分叉：
+    // rowRepairStraightside = rowRepairLine;    值道侧补线起点，
+    //环道补线起点。     rowRepairRingside = i;
+    //直道补线终点，     rowYendStraightside = track.pointsEdgeLeft[i].x;
+    //        track.pointsEdgeLeft.resize(rowRepairRingside);
+    //        rowRepairRingside是环一侧的补线起点
+    //        track.pointsEdgeRight.resize(rowRepairStraightside);
+    //        rowRepairStraightside是直道侧的补线起点 for (int kk = 0; kk <
+    //        b_modify.size(); ++kk)
+    //        {
+    //        track.pointsEdgeRight.emplace_back(b_modify[kk]);
+    //        这个不知道干嘛，反正是改变track的，估计是增强的东西。
+    //         }
+
+    //有分叉：
+    // track.pointsEdgeRight.resize(0);
+    //                     track.pointsEdgeLeft.resize(0);
+    //                     for (int kk = 0; kk < b_modify.size(); ++kk)
+    //                     {
+    //                         track.pointsEdgeRight.emplace_back(b_modify[kk]);
+    //                     }
+     
+   
     // 判环
     int countWide = 0; // 环岛入口变宽区域行数
     for (int i = 1; i < track.widthBlock.size(); ++i) {
@@ -329,6 +391,17 @@ public:
         counterSpurroad >= 3) {
       ringStep = RingStep::Inside;
     }
+
+//我的笔记：左入，右入，但是右入else{;}没有了，
+    //左入：利用右边缘横坐标连续性(行号)rowBreakRight   和
+    //边缘拐点起始行（右）rowBreakpointRight  进行补线
+    //第一个if：track.pointsEdgeRight.resize(rowBreakRight); // 前80列不需要补线
+    //第二个else if：    float slopeTop = 0;    // 斜率：分歧点上半部分
+    //                    float slopeButtom = 0; // 斜率：分歧点下半部分
+    //利用上面的两个，进行贝塞尔曲线，然后track改变
+    //第三个else if：直接进行贝塞尔，然后track改变。
+
+
     // 出环补线
     if (ringStep == RingStep::Inside) {
       if (ringType == RingType::RingLeft) {
